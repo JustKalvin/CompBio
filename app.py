@@ -14,7 +14,7 @@ ner_pipeline = pipeline("ner", model="d4data/biomedical-ner-all")
 
 # Set OpenRouter API Key (bisa juga dari st.secrets["OPENROUTER_API_KEY"])
 # OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "YOUR_OPENROUTER_API_KEY")  # Ganti jika ingin hardcode
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 
 # Fungsi panggil OpenRouter
 def explain_entity(term):
