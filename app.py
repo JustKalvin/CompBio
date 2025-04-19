@@ -152,16 +152,8 @@ with col2:
     st.image("images/logo_synth.png", width=100)
 with col3:
     st.markdown(
-        """
-        <style>
-        .centered-text {
-            text-align: center !important;
-        }
-        </style>
-        <h1 class="centered-text">Sȳnth</h1>
-        <p class="centered-text">💬 Get ready with Sȳnth!</p>
-        """,
-        unsafe_allow_html=True,
+        <p class="centered-text">💬 Get ready with Sȳnth!</p>, 
+        unsafe_allow_html=True
     )
 
 # Upload PDF File
