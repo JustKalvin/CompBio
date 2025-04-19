@@ -147,10 +147,10 @@ def display_entities_horizontally(entities, columns_per_row=5):
                 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Synth", layout="wide")
-col1, col2 = st.columns([1, 3])
-with col1:
-    st.image("images/logo_synth.png", width=100)
+col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
+    st.image("images/logo_synth.png", width=100)
+with col3:
     st.markdown(
         """
         <style>
