@@ -149,7 +149,7 @@ def display_entities_horizontally(entities, columns_per_row=5):
 st.set_page_config(page_title="Synth", layout="wide")
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2 : 
-    st.image("images/logo_synth.png")
+    st.image("images/logo_synth.png", width = 100)
     st.markdown('<h1>Sȳnth</h1>', unsafe_allow_html=True)
     
  
