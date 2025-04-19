@@ -134,7 +134,7 @@ def highlight_text(text, entities):
     entity_list += "</ul>" if entities else "<p><em>No medical entities detected.</em></p>"
     return highlighted_text, entity_list
     
-def display_entities_horizontally(entities, columns_per_row=4):
+def display_entities_horizontally(entities, columns_per_row=5):
     num_entities = len(entities)
     num_rows = (num_entities + columns_per_row - 1) // columns_per_row
     for i in range(num_rows):
@@ -176,7 +176,7 @@ if chat_input:
         num_entities_chat = len(entities_chat)
         cols_chat = st.columns(4)
         for i, ent in enumerate(entities_chat):
-            with cols_chat[i % 4]:
+            with cols_chat[i % 5]:
                 if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"chat_entity_{ent['word']}"):
                     selected_entities_chat.append(ent["word"])
         if st.button("Send (Entities)"):
@@ -187,37 +187,3 @@ if chat_input:
                 st.info(explanation_chat)
             else:
                 st.warning("Silakan pilih minimal satu entitas sebelum mengirim.")
-
-
-
-
-
-
-# if chat_input:
-#     preprocessed_msg = re.sub(r"[^a-zA-Z0-9\s]", "", chat_input).lower()
-#     entities_chat = extract_entities(preprocessed_msg)
-#     # Highlight + List
-#     highlighted_html_chat, entity_html_list_chat = highlight_text(chat_input, entities_chat)
-#     st.markdown("<h3>🔍 Highlighted Text (NER - Chat Input)</h3>", unsafe_allow_html=True)
-#     st.markdown(highlighted_html_chat, unsafe_allow_html=True)
-#     st.markdown("<h4>🔍 Recognized Medical Entities (Chat Input):</h4>", unsafe_allow_html=True)
-#     st.markdown(entity_html_list_chat, unsafe_allow_html=True)
-#     # Simpan entitas untuk dropdown
-#     unique_terms_chat = list({ent["word"] for ent in entities_chat})
-#     if unique_terms_chat:
-#         st.markdown("### 🧠 Pilih entitas dari pesan untuk penjelasan:")
-#         # Checkbox untuk setiap entitas
-#         selected_entities_chat = []
-#         for ent in entities_chat:
-#             # Use the 'word' of the entity as the key to ensure uniqueness
-#             if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"chat_entity_{ent['word']}"):
-#                 selected_entities_chat.append(ent["word"])
-#         # Gabungkan entitas yang dicek sebagai satu string
-#         if st.button("Send (Entities)"):
-#             if selected_entities_chat:
-#                 combined_term_chat = ' '.join(selected_entities_chat)
-#                 explanation_chat = explain_entity(combined_term_chat)
-#                 st.markdown(f"**ℹ️ Explanation for '{combined_term_chat}':**")
-#                 st.info(explanation_chat)
-#             else:
-#                 st.warning("Silakan pilih minimal satu entitas sebelum mengirim.")
