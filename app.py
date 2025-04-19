@@ -147,6 +147,7 @@ def display_entities_horizontally(entities, columns_per_row=5):
                 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Synth", layout="wide")
+st.image("images/logo_synth.png")
 st.markdown("<h1 style='text-align: center;'>🩺 Sȳnth</h1><p style='text-align: center;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
 
 # Upload PDF File
