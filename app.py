@@ -167,11 +167,11 @@ if chat_input:
     st.markdown("<h3>🔍 Highlighted Text</h3>", unsafe_allow_html=True)
     st.markdown(highlighted_html_chat, unsafe_allow_html=True)
     st.markdown("<h4>🔍 Recognized Medical Entities:</h4>", unsafe_allow_html=True)
-    display_entities_horizontally(entities_chat)
+    # display_entities_horizontally(entities_chat)
 
     unique_terms_chat = list({ent["word"] for ent in entities_chat})
     if unique_terms_chat:
-        st.markdown("### 🧠 Pilih entitas dari pesan untuk penjelasan:")
+        # st.markdown("### 🧠 Pilih entitas dari pesan untuk penjelasan:")
         selected_entities_chat = []
         num_entities_chat = len(entities_chat)
         cols_chat = st.columns(5)
