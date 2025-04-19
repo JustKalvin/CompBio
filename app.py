@@ -147,8 +147,11 @@ def display_entities_horizontally(entities, columns_per_row=5):
                 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Synth", layout="wide")
-st.image("images/logo_synth.png")
-st.markdown("<h1 style='text-align: center;'>🩺 Sȳnth</h1><p style='text-align: center;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
+col1, col2 = st.columns([1, 3])  # Membuat dua kolom dengan perbandingan lebar 1:3
+with col1:
+    st.image("images/logo_synth.png", width=100)  # Atur lebar gambar sesuai keinginan
+with col2:
+    st.markdown("<h1 style='text-align: left;'>Sȳnth</h1><p style='text-align: left;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
 
 # Upload PDF File
 uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
