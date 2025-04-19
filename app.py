@@ -147,8 +147,8 @@ def display_entities_horizontally(entities, columns_per_row=5):
                 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Synth", layout="wide")
-col1, col2 = st.columns([1, 3])  # Membuat dua kolom dengan perbandingan lebar 1:3
-with col1:
+col1, col2, col3 = st.columns([1, 2, 1]) # Membuat dua kolom dengan perbandingan lebar 1:3
+with col2:
     st.image("images/logo_synth.png", width=100)  # Atur lebar gambar sesuai keinginan
 with col2:
     st.markdown("<h1 style='text-align: left;'>Sȳnth</h1><p style='text-align: left;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
