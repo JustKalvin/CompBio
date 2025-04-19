@@ -12,8 +12,7 @@ from pdfminer.pdfpage import PDFPage
 # Load NER model
 ner_pipeline = pipeline("ner", model="d4data/biomedical-ner-all")
 
-# Set OpenRouter API Key (bisa juga dari st.secrets["OPENROUTER_API_KEY"])
-# OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "YOUR_OPENROUTER_API_KEY")  # Ganti jika ingin hardcode
+# Set OpenRouter API Key
 OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
 
 # Fungsi panggil OpenRouter
@@ -134,21 +133,20 @@ def highlight_text(text, entities):
     entity_list += "</ul>" if entities else "<p><em>No medical entities detected.</em></p>"
     return highlighted_text, entity_list
 
+def display_entities_horizontally(entities, columns_per_row=4):
+    num_entities = len(entities)
+    num_rows = (num_entities + columns_per_row - 1) // columns_per_row
+    for i in range(num_rows):
+        cols = st.columns(columns_per_row)
+        for j in range(columns_per_row):
+            index = i * columns_per_row + j
+            if index < num_entities:
+                ent = entities[index]
+                cols[j].markdown(f"- **{ent['word']}** ({ent['entity']})")
+
 # --- Streamlit UI ---
-# st.set_page_config(page_title="Synth", layout="wide")
-# col1, col2, col3 = st.columns([1, 2, 1])
-# # Ganti dengan URL mentah logo_synth.png Anda yang sebenarnya
-# logo_url = "https://huggingface.co/spaces/flavaflav/medical-streamlit/blob/main/images/logo_synth.png"
-# # Menampilkan logo di bagian atas
-# with col2 : 
-#     st.image(logo_url, width=100) # Atur lebar sesuai keinginan
-# st.markdown("<h1 style='text-align: center;'>🩺 Sȳnth</h1><p style='text-align: center;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
-
-
-
-# Sisa kode aplikasi Anda...
 st.set_page_config(page_title="Synth", layout="wide")
-st.markdown("<h1 style='text-align: center;'>🩺 Sȳnth</h1><p style='text-align: center;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🩺 Sȳnth</h1><p style='text-align: center;'>💬 Get ready with Sȳnth!</p>", unsafe_allow_html=True)
 
 # Upload PDF File
 uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
@@ -157,59 +155,55 @@ extracted_text = ""
 if uploaded_file is not None:
     st.subheader("📄 PDF Content:")
     text_content = extract_text_from_pdf(uploaded_file)
-    # st.text_area("Extracted Text", text_content, height=300)
 
-    # st.subheader("⚕️ Medical Entity Recognition")
-    extracted_text = text_content
-    # entities = extract_entities(preprocessed_msg)
+    st.subheader("⚕️ Medical Entity Recognition (PDF)")
+    entities_pdf = extract_entities(text_content)
+    highlighted_html_pdf, entity_html_list_pdf = highlight_text(text_content, entities_pdf)
+    st.markdown("<h3>🔍 Highlighted Text</h3>", unsafe_allow_html=True)
+    st.markdown(highlighted_html_pdf, unsafe_allow_html=True)
+    st.markdown("<h4>🔍 Recognized Medical Entities:</h4>", unsafe_allow_html=True)
+    display_entities_horizontally(entities_pdf)
 
-    # # Highlight + List
-    # highlighted_html, entity_html_list = highlight_text(text_content, entities)
-    # st.markdown("<h3>🔍 Highlighted Text (NER)</h3>", unsafe_allow_html=True)
-    # st.markdown(highlighted_html, unsafe_allow_html=True)
-    # st.markdown("<h4>🔍 Recognized Medical Entities:</h4>", unsafe_allow_html=True)
-    # st.markdown(entity_html_list, unsafe_allow_html=True)
+    unique_terms_pdf = list({ent["word"] for ent in entities_pdf})
+    if unique_terms_pdf:
+        st.markdown("### 🧠 Pilih entitas dari PDF untuk penjelasan:")
+        selected_entities_pdf = []
+        num_entities_pdf = len(entities_pdf)
+        cols_pdf = st.columns(4)
+        for i, ent in enumerate(entities_pdf):
+            with cols_pdf[i % 4]:
+                if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"pdf_entity_{ent['word']}"):
+                    selected_entities_pdf.append(ent["word"])
+        if st.button("Send (PDF Entities)"):
+            if selected_entities_pdf:
+                combined_term_pdf = ' '.join(selected_entities_pdf)
+                explanation_pdf = explain_entity(combined_term_pdf)
+                st.markdown(f"**ℹ️ Explanation for '{combined_term_pdf}':**")
+                st.info(explanation_pdf)
+            else:
+                st.warning("Silakan pilih minimal satu entitas sebelum mengirim.")
 
-    # # Simpan entitas untuk dropdown
-    # unique_terms = list({ent["word"] for ent in entities})
-    # if unique_terms:
-    #     st.markdown("### 🧠 Pilih entitas yang ingin kamu gabungkan untuk penjelasan:")
-    #     # Checkbox untuk setiap entitas
-    #     selected_entities = []
-    #     for ent in entities:
-    #         # Use the 'word' of the entity as the key to ensure uniqueness
-    #         if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"pdf_entity_{ent['word']}"):
-    #             selected_entities.append(ent["word"])
-    #     # Gabungkan entitas yang dicek sebagai satu string
-    #     if st.button("Kirim (PDF Entities)"):
-    #         if selected_entities:
-    #             combined_term = ' '.join(selected_entities)
-    #             explanation = explain_entity(combined_term)
-    #             st.markdown(f"**ℹ️ Explanation for '{combined_term}':**")
-    #             st.info(explanation)
-    #         else:
-    #             st.warning("Silakan pilih minimal satu entitas sebelum mengirim.")
-chat_input = st.text_input("Your Message", value = extracted_text, placeholder="Type your message here...")
+chat_input = st.text_input("Your Message", value=extracted_text, placeholder="Type your message here...")
 if chat_input:
+    st.subheader("⚕️ Medical Entity Recognition (Chat Input)")
     preprocessed_msg = re.sub(r"[^a-zA-Z0-9\s]", "", chat_input).lower()
     entities_chat = extract_entities(preprocessed_msg)
-    # Highlight + List
     highlighted_html_chat, entity_html_list_chat = highlight_text(chat_input, entities_chat)
-    st.markdown("<h3>🔍 Highlighted Text (NER - Chat Input)</h3>", unsafe_allow_html=True)
+    st.markdown("<h3>🔍 Highlighted Text</h3>", unsafe_allow_html=True)
     st.markdown(highlighted_html_chat, unsafe_allow_html=True)
-    st.markdown("<h4>🔍 Recognized Medical Entities (Chat Input):</h4>", unsafe_allow_html=True)
-    st.markdown(entity_html_list_chat, unsafe_allow_html=True)
-    # Simpan entitas untuk dropdown
+    st.markdown("<h4>🔍 Recognized Medical Entities:</h4>", unsafe_allow_html=True)
+    display_entities_horizontally(entities_chat)
+
     unique_terms_chat = list({ent["word"] for ent in entities_chat})
     if unique_terms_chat:
         st.markdown("### 🧠 Pilih entitas dari pesan untuk penjelasan:")
-        # Checkbox untuk setiap entitas
         selected_entities_chat = []
-        for ent in entities_chat:
-            # Use the 'word' of the entity as the key to ensure uniqueness
-            if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"chat_entity_{ent['word']}"):
-                selected_entities_chat.append(ent["word"])
-        # Gabungkan entitas yang dicek sebagai satu string
+        num_entities_chat = len(entities_chat)
+        cols_chat = st.columns(4)
+        for i, ent in enumerate(entities_chat):
+            with cols_chat[i % 4]:
+                if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"chat_entity_{ent['word']}"):
+                    selected_entities_chat.append(ent["word"])
         if st.button("Send (Entities)"):
             if selected_entities_chat:
                 combined_term_chat = ' '.join(selected_entities_chat)
