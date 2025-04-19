@@ -174,7 +174,7 @@ if chat_input:
         st.markdown("### 🧠 Pilih entitas dari pesan untuk penjelasan:")
         selected_entities_chat = []
         num_entities_chat = len(entities_chat)
-        cols_chat = st.columns(4)
+        cols_chat = st.columns(5)
         for i, ent in enumerate(entities_chat):
             with cols_chat[i % 5]:
                 if st.checkbox(f"{ent['word']} ({ent['entity']})", key=f"chat_entity_{ent['word']}"):
