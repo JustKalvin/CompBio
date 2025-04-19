@@ -151,10 +151,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.image("images/logo_synth.png", width=100)
 with col3:
-    st.markdown(
-        <p class="centered-text">💬 Get ready with Sȳnth!</p>, 
-        unsafe_allow_html=True
-    )
+    st.markdown("Sȳnth")
 
 # Upload PDF File
 uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
